@@ -9,7 +9,11 @@ config.read('config.ini')
 
 dataset_path = Path(config['DEFAULT']['DatasetTrainPath'])
 
-num_samples_per_video = 3
+output_path = "data/samples/train/imgs_sampled/"
+if not Path(output_path).exists():
+    Path(output_path).mkdir()
+
+num_samples_per_video = 5
 
 for video_path in tqdm(dataset_path.iterdir()):
 
@@ -28,5 +32,5 @@ for video_path in tqdm(dataset_path.iterdir()):
             print("Read error!")
         else:
             img_name = f"{video_id}_{idx}.jpg"
-            img_path = "data/samples/train/" + img_name
+            img_path = output_path + img_name
             cv2.imwrite(img_path, frame)

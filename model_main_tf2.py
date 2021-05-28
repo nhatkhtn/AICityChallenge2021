@@ -27,9 +27,15 @@ python model_main_tf2.py -- \
   --pipeline_config_path=$PIPELINE_CONFIG_PATH \
   --alsologtostderr
 """
+import shutil
+from pathlib import Path
+
 from absl import flags
 import tensorflow.compat.v2 as tf
 from object_detection import model_lib_v2
+import wandb
+
+wandb.init(project='aicity2021', sync_tensorboard=True)
 
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config '
                     'file.')
@@ -70,11 +76,13 @@ flags.DEFINE_boolean('record_summaries', True,
 
 FLAGS = flags.FLAGS
 
-
 def main(unused_argv):
   flags.mark_flag_as_required('model_dir')
   flags.mark_flag_as_required('pipeline_config_path')
   tf.config.set_soft_device_placement(True)
+
+  shutil.copyfile(FLAGS.pipeline_config_path, Path(wandb.run.dir) / Path(FLAGS.pipeline_config_path)
+                  .name)
 
   if FLAGS.checkpoint_dir:
     model_lib_v2.eval_continuously(
